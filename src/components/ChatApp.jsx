@@ -15,7 +15,7 @@ export default function ChatApp() {
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/getMessage');
+      const response = await fetch('https://chat-backend-six-sooty.vercel.app/api/getmessage');
       const result = await response.json();
       if (result.success && result.data) {
         // Sort messages by timestamp
@@ -36,7 +36,7 @@ export default function ChatApp() {
 
     setSending(true);
     try {
-      const response = await fetch('http://localhost:3000/api/message', {
+      const response = await fetch('https://chat-backend-six-sooty.vercel.app/api/message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
