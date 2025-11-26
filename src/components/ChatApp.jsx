@@ -7,6 +7,7 @@ export default function ChatApp() {
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -18,7 +19,6 @@ export default function ChatApp() {
       const response = await fetch('https://chat-backend-six-sooty.vercel.app/api/getmessage');
       const result = await response.json();
       if (result.success && result.data) {
-        // Sort messages by timestamp
         const sortedMessages = result.data.sort((a, b) => 
           new Date(a.createdAt) - new Date(b.createdAt)
         );
@@ -79,17 +79,20 @@ export default function ChatApp() {
 
   return (
     <div style={{
-      height: '100vh',
+      width: '100%',
+      height: '100dvh',
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: '#0a1014',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      overflow: 'hidden'
     }}>
       {/* Header */}
       <div style={{
         backgroundColor: '#1f2c33',
         padding: '16px',
-        borderBottom: '1px solid #2a3942'
+        borderBottom: '1px solid #2a3942',
+        flexShrink: 0
       }}>
         <div style={{ color: '#e9edef', fontSize: '20px', fontWeight: '500' }}>
           Chat
@@ -97,13 +100,17 @@ export default function ChatApp() {
       </div>
 
       {/* Messages Container */}
-      <div style={{
-        flex: 1,
-        overflowY: 'auto',
-        padding: '20px',
-        backgroundImage: 'linear-gradient(to bottom, #0a1014 0%, #0d1418 100%)',
-        position: 'relative'
-      }}>
+      <div 
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          padding: '20px',
+          backgroundImage: 'linear-gradient(to bottom, #0a1014 0%, #0d1418 100%)',
+          position: 'relative',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
         <div style={{
           position: 'absolute',
           top: 0,
@@ -127,7 +134,7 @@ export default function ChatApp() {
           </div>
         ) : (
           <div style={{ position: 'relative', zIndex: 1 }}>
-            {messages.map((msg, index) => {
+            {messages.map((msg) => {
               const isMine = msg.message.includes('by Ashok');
               const displayMessage = isMine ? msg.message.replace('by Ashok', '').trim() : msg.message;
               
@@ -170,14 +177,15 @@ export default function ChatApp() {
         )}
       </div>
 
-      {/* Input Container */}
+      {/* Input Container - Always at bottom */}
       <div style={{
         backgroundColor: '#1f2c33',
         padding: '10px 16px',
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        borderTop: '1px solid #2a3942'
+        borderTop: '1px solid #2a3942',
+        flexShrink: 0
       }}>
         <div style={{
           flex: 1,
@@ -188,6 +196,7 @@ export default function ChatApp() {
           padding: '8px 12px'
         }}>
           <input
+            ref={inputRef}
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
@@ -200,7 +209,7 @@ export default function ChatApp() {
               border: 'none',
               outline: 'none',
               color: '#e9edef',
-              fontSize: '15px',
+              fontSize: '16px',
               fontFamily: 'inherit'
             }}
           />
@@ -219,7 +228,8 @@ export default function ChatApp() {
             justifyContent: 'center',
             cursor: inputMessage.trim() && !sending ? 'pointer' : 'not-allowed',
             transition: 'all 0.2s',
-            opacity: sending ? 0.6 : 1
+            opacity: sending ? 0.6 : 1,
+            flexShrink: 0
           }}
         >
           <Send size={20} color={inputMessage.trim() ? '#ffffff' : '#8696a0'} />
@@ -241,6 +251,10 @@ export default function ChatApp() {
           
           input::placeholder {
             color: #8696a0;
+          }
+
+          input {
+            font-size: 16px !important;
           }
         `}
       </style>
